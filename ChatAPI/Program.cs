@@ -19,5 +19,9 @@ app.MapGet("/chat", (DateTime? timestamp) =>
     //tutaj zwracamy historiê czatu
     return chatHistory.GetMessagesAfter(timestamp ?? DateTime.Now);
 });
-
+app.MapPost("/chat", (ChatMessage message) =>
+{
+    chatHistory.AddMessage(message);
+    return Results.Created($"/chat/{message.Timestamp.Ticks}", message);
+});
 app.Run();
