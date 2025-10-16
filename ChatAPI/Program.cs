@@ -4,7 +4,7 @@ using System.Web;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 //ustaw adresy ip i porty
-app.Urls.Add("http://192.168.6.25:5000");
+app.Urls.Add("http://0.0.0.0:5000");
 
 ChatHistory chatHistory = new ChatHistory();
 chatHistory.AddMessage(new ChatMessage("User", "Hello!"));
