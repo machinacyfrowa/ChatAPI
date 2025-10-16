@@ -24,3 +24,4 @@ namespace ChatAPI
             modelBuilder.Entity<ChatMessage>().Property(m => m.Content).IsRequired();
         }
     }
+}
