@@ -39,6 +39,10 @@ app.MapGet("/chat", (Database db, string? timestamp) =>
 });
 app.MapPost("/chat", (Database db, ChatMessage message) =>
 {
+    if(string.IsNullOrEmpty(message.Content) || string.IsNullOrEmpty(message.Author))
+    {
+        return Results.BadRequest("Author and Content fields are required.");
+    }
     ChatHistory chatHistory = new ChatHistory(db);
     chatHistory.AddMessage(message);
     return Results.Created($"/chat/{message.Timestamp.Ticks}", message);
