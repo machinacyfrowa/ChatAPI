@@ -2,21 +2,27 @@ using ChatAPI;
 using System.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+//dodaj baze danych do aplikacji
+builder.Services.AddDbContext<Database>();
+
 var app = builder.Build();
 //ustaw adresy ip i porty
 app.Urls.Add("http://0.0.0.0:5000");
+app.UseRouting();
 
-ChatHistory chatHistory = new ChatHistory();
-chatHistory.AddMessage(new ChatMessage("User", "Hello!"));
-chatHistory.AddMessage(new ChatMessage("Bot", "Hi there! How can I assist you today?"));
-chatHistory.AddMessage(new ChatMessage("User", "Can you tell me a joke?"));
+//TODO: do wywalenia po zintegrowaniu z baz¹ danych
+//ChatHistory chatHistory = new ChatHistory();
+//chatHistory.AddMessage(new ChatMessage("User", "Hello!"));
+//chatHistory.AddMessage(new ChatMessage("Bot", "Hi there! How can I assist you today?"));
+//chatHistory.AddMessage(new ChatMessage("User", "Can you tell me a joke?"));
 
 
 app.MapGet("/", () => "Hello World!");
 
 
-app.MapGet("/chat", (string? timestamp) =>
+app.MapGet("/chat", (Database db, string? timestamp) =>
 {
+    ChatHistory chatHistory = new ChatHistory(db);
     //timestamp jest null tylko wtedy kiedy jawnie odpytamy bez niego
     //a nie na przyk³ad na skutek b³êdu
     if (timestamp == null)
@@ -31,8 +37,9 @@ app.MapGet("/chat", (string? timestamp) =>
     //odpytujemy nasz¹ klasê o wiadomoœci po danym timestampie i wysy³amy
     return chatHistory.GetMessagesAfter(parsedTimestamp);
 });
-app.MapPost("/chat", (ChatMessage message) =>
+app.MapPost("/chat", (Database db, ChatMessage message) =>
 {
+    ChatHistory chatHistory = new ChatHistory(db);
     chatHistory.AddMessage(message);
     return Results.Created($"/chat/{message.Timestamp.Ticks}", message);
 });
