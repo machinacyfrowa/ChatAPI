@@ -15,6 +15,8 @@
         {
             //Messages.Add(message);
             db.Messages.Add(message);
+            //zapisujemy "ręcznie" bo inaczej posty nie trafią do bazy
+            db.SaveChanges();
         }
         public List<ChatMessage> GetMessagesAfter(DateTime timestamp)
         {
