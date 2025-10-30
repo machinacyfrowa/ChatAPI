@@ -5,7 +5,10 @@ var builder = WebApplication.CreateBuilder(args);
 //dodaj baze danych do aplikacji
 builder.Services.AddDbContext<Database>();
 
+
 var app = builder.Build();
+app.UseBearerMiddleware(); //to jest jeden sposób - ten bardziej poprawny
+//app.UseMiddleware<BearerMiddleware>(); //to jest drugi sposób - oba dzia³aj¹
 //ustaw adresy ip i porty
 app.Urls.Add("http://0.0.0.0:5000");
 app.UseRouting();
