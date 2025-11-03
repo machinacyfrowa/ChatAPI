@@ -19,7 +19,7 @@ namespace ChatAPI
         public async Task InvokeAsync(HttpContext context)
         {
             //pomiń middleware dla endpointu /login
-            if (context.Request.Path.Equals("/login"))
+            if (context.Request.Path.Equals("/login") || context.Request.Path.Equals("/register"))
             {
                 await _next(context);
                 return;

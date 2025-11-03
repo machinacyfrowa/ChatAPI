@@ -27,7 +27,12 @@ app.MapGet("/login", () =>
     //w prawdziwej apce tutaj byœmy sprawdzali usera i has³o
     return Results.Ok();
 });
-
+app.MapPost("/register", (Database db, User user) =>
+{
+    db.Users.Add(user);
+    db.SaveChanges();
+    return Results.Created($"{user.Id}", user);
+});
 app.MapGet("/chat", (Database db, string? timestamp) =>
 {
     ChatHistory chatHistory = new ChatHistory(db);
