@@ -18,6 +18,12 @@ namespace ChatAPI
         //to jest faktyczna metoda która będzie wywoływana
         public async Task InvokeAsync(HttpContext context)
         {
+            //pomiń middleware dla endpointu /login
+            if (context.Request.Path.Equals("/login"))
+            {
+                await _next(context);
+                return;
+            }
             //pobierz sobie nagłówek do stringa
             string authHeader = context.Request.Headers["Authorization"].ToString();
             //teraz może być tak, że authHeader jest pusty lub nie zawiera "Bearer "

@@ -22,6 +22,11 @@ app.UseRouting();
 
 app.MapGet("/", () => "Hello World!");
 
+app.MapGet("/login", () =>
+{
+    //w prawdziwej apce tutaj byœmy sprawdzali usera i has³o
+    return Results.Ok();
+});
 
 app.MapGet("/chat", (Database db, string? timestamp) =>
 {
