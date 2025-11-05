@@ -18,8 +18,8 @@ namespace ChatAPI
         //to jest faktyczna metoda która będzie wywoływana
         public async Task InvokeAsync(HttpContext context)
         {
-            //pomiń middleware dla endpointu /login
-            if (context.Request.Path.Equals("/login") || context.Request.Path.Equals("/register"))
+            //pomiń middleware dla endpointu rejestracji i logowania
+            if (context.Request.Path.Equals("/users") || context.Request.Path.Equals("/user/me"))
             {
                 await _next(context);
                 return;

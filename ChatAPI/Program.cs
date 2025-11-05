@@ -22,35 +22,35 @@ app.UseRouting();
 
 app.MapGet("/", () => "Hello World!");
 
-app.MapGet("/login", () =>
+//logowanie u¿ytkownika
+app.MapPost("/user/me", (Database db, User user) =>
 {
     //w prawdziwej apce tutaj byœmy sprawdzali usera i has³o
     return Results.Ok();
 });
-app.MapPost("/register", (Database db, User user) =>
+//rejestracja u¿ytkownika
+app.MapPost("/users", (Database db, User user) =>
 {
     db.Users.Add(user);
     db.SaveChanges();
     return Results.Created($"{user.Id}", user);
 });
-app.MapGet("/chat", (Database db, string? timestamp) =>
+//pobranie historii czatu
+app.MapGet("/chat/messages", (Database db, string minimalDate) =>
 {
     ChatHistory chatHistory = new ChatHistory(db);
-    //timestamp jest null tylko wtedy kiedy jawnie odpytamy bez niego
-    //a nie na przyk³ad na skutek b³êdu
-    if (timestamp == null)
-        return chatHistory.GetLast(10);
     //tutaj zwracamy historiê czatu
     //ustawiamy defaultowy czas ostatniej wiadomoœci na teraz
     //nie jest to zbyt logiczne ale potrzebujemy pocz¹tkowej wartoœci
     DateTime parsedTimestamp = DateTime.Now;
     //timestamp jest w postaci stringa "2025-10-13T13:08:22.1712280+02:00"
     //parsujemy go do formatu obiektu datetime
-    DateTime.TryParse(timestamp, out parsedTimestamp);
+    DateTime.TryParse(minimalDate, out parsedTimestamp);
     //odpytujemy nasz¹ klasê o wiadomoœci po danym timestampie i wysy³amy
     return chatHistory.GetMessagesAfter(parsedTimestamp);
 });
-app.MapPost("/chat", (Database db, ChatMessage message) =>
+//dodanie wiadomoœci do czatu
+app.MapPost("/chat/messages", (Database db, ChatMessage message) =>
 {
     if(string.IsNullOrEmpty(message.Content) || string.IsNullOrEmpty(message.Author))
     {
@@ -58,6 +58,6 @@ app.MapPost("/chat", (Database db, ChatMessage message) =>
     }
     ChatHistory chatHistory = new ChatHistory(db);
     chatHistory.AddMessage(message);
-    return Results.Created($"/chat/{message.Timestamp.Ticks}", message);
+    return Results.Created($"/chat/messages/{message.Timestamp.Ticks}", message);
 });
 app.Run();
