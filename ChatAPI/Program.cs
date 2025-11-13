@@ -20,6 +20,8 @@ app.UseRouting();
 //chatHistory.AddMessage(new ChatMessage("Bot", "Hi there! How can I assist you today?"));
 //chatHistory.AddMessage(new ChatMessage("User", "Can you tell me a joke?"));
 
+//s³ownik tokenów zalogowanych u¿ytkowników
+Dictionary<string, User> userTokens = new Dictionary<string, User>();
 
 app.MapGet("/", () => "Hello World!");
 
@@ -43,7 +45,12 @@ app.MapPost("/user/me", (Database db, User user) =>
     {
         return Results.Unauthorized();
     }
-    string token = "superTajnyToken";
+    //wygeneruj nowy token dla u¿ytkownika
+    string token = Guid.NewGuid().ToString();
+    //zapisz token w s³owniku
+    userTokens.Add(token, existingUser);
+    //userTokens[token] = existingUser;
+    //zwróæ token
     return Results.Ok(token);
 });
 //rejestracja u¿ytkownika
