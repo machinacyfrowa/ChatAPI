@@ -1,4 +1,5 @@
 using ChatAPI;
+using Isopoh.Cryptography.Argon2;
 using System.Web;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,8 +26,25 @@ app.MapGet("/", () => "Hello World!");
 //logowanie u¿ytkownika
 app.MapPost("/user/me", (Database db, User user) =>
 {
-    //w prawdziwej apce tutaj byœmy sprawdzali usera i has³o
-    return Results.Ok();
+    //wbrew definicji otrzymany User.PasswordHash zawiera
+    //w rzeczywistoœci has³o w postaci zwyk³ego tekstu
+    User? existingUser = db.Users.FirstOrDefault(u => u.Email == user.Email);
+    //je¿eli u¿ytkownik nie istnieje to zwróæ b³¹d 401
+    if (existingUser == null)
+    {
+        return Results.Unauthorized();
+    }
+    //sprawdzamy has³o - podajemy do funkcji weryfikuj¹cej
+    //hash z bazy i has³o podane przez u¿ytkownika
+    //verify zwraca true je¿eli has³o siê zgadza
+    bool passwordOK = Argon2.Verify(existingUser.PasswordHash, user.PasswordHash);
+    //jeœli has³o siê nie zgadza to zwróæ b³¹d 401
+    if (!passwordOK)
+    {
+        return Results.Unauthorized();
+    }
+    string token = "superTajnyToken";
+    return Results.Ok(token);
 });
 //rejestracja u¿ytkownika
 app.MapPost("/users", (Database db, User user) =>
