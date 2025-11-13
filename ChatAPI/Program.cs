@@ -49,6 +49,7 @@ app.MapPost("/user/me", (Database db, User user) =>
 //rejestracja u¿ytkownika
 app.MapPost("/users", (Database db, User user) =>
 {
+    user.PasswordHash = Argon2.Hash(user.PasswordHash);
     db.Users.Add(user);
     db.SaveChanges();
     return Results.Created($"{user.Id}", user);
