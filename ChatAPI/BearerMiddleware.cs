@@ -39,7 +39,7 @@ namespace ChatAPI
             //obcinamy sobie początek "Bearer " i zostawiamy sam token
             string token = authHeader.Substring("Bearer ".Length).Trim();
             //sprawdzmy sobie tylko czy token jest równy jakiemuś przykładowemu tokenowi
-            if(token != "superTajnyToken")
+            if(!Tokens.userTokens.TryGetValue(token, out User user))
             {
                 //jeśli token jest nieprawidłowy to zwróć 403 Forbidden
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
@@ -47,6 +47,8 @@ namespace ChatAPI
                 return; //uwaga tutaj apka kończy działanie - nie przejdzie do następnego middleware
             }
             //jeśli dotarliśmy tutaj to znaczy że mamy prawidłowy token
+            //możemy zapisać użytkownika w kontekście HTTP aby inne middleware miały do niego dostęp
+            context.Items["User"] = user;
             //przekazujemy kontrolę do następnego middleware w potoku
             await _next(context);
         }
